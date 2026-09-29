@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ต้นไม้อาชีพ · ทางสายไอที</title>
+  <meta name="description" content="เลือกสายอาชีพไอทีด้วยต้นไม้การตัดสินใจ (Rooted Tree) — โครงงาน Graph Theory และ Tree">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B3%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="wrap">
+
+  <section class="hero">
+    <div>
+      <p class="tag">หน้า 1 จาก 4 · หลักการ: Tree</p>
+      <h1>ตอบทีละข้อ แล้วเดินลงต้นไม้<br>ไปหาอาชีพไอทีที่ใช่</h1>
+      <p class="lead">ทุกคำตอบคือการเดินลงจาก Root หนึ่งชั้น จนถึง Leaf ซึ่งก็คืออาชีพ 1 อย่าง จากนั้นไปดูทักษะที่ต้องเรียนต่อในหน้าถัดไป</p>
+    </div>
+    <div class="stats" id="treeStats"></div>
+  </section>
+
+  <section class="grid-side">
+    <div class="card">
+      <div class="card-h">
+        <h2>เลือกเส้นทางของคุณ</h2>
+        <div class="row">
+          <button class="btn sm" id="btnBack">← ย้อนกลับ</button>
+          <button class="btn sm" id="btnReset">เริ่มใหม่</button>
+        </div>
+      </div>
+      <div id="crumbs" class="crumbs" aria-label="Path จาก Root"></div>
+      <div id="decision"></div>
+      <div class="rolebox" id="roles"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">
+        <h2>ต้นไม้อาชีพ (Rooted Tree)</h2>
+        <div class="legend">
+          <span><i class="sw root"></i>Root</span>
+          <span><i class="sw parent"></i>Parent / Child</span>
+          <span><i class="sw leaf"></i>Leaf</span>
+          <span><i class="sw path"></i>Path ที่เลือก</span>
+        </div>
+      </div>
+      <div class="gv-wrap flat"><svg id="tsvg" class="gv tv" role="img" aria-label="ต้นไม้อาชีพ 4 ระดับ"></svg></div>
+      <p class="hint">คลิกโหนดใดก็ได้เพื่อกระโดดไปที่ตำแหน่งนั้น — เส้นสีส้มคือ Path จาก Root ถึงโหนดปัจจุบัน</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-h">
+      <h2>Tree Traversal <span class="badge-bonus">Bonus</span></h2>
+      <div class="row">
+        <div class="seg" id="travSeg">
+          <button data-k="pre">Preorder</button>
+          <button data-k="post">Postorder</button>
+          <button data-k="level">BFS (Level-order)</button>
+        </div>
+        <button class="btn sm" id="travClear">ล้าง</button>
+      </div>
+    </div>
+    <p id="travDesc" class="muted">เลือกวิธีเดินผ่านต้นไม้ แล้วดูลำดับการเยี่ยมบนแผนภาพด้านบน</p>
+    <div id="travOut" class="ordlist"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>Tree นี้แทนอะไรในระบบ</h2></div>
+    <div class="cols-3">
+      <div>
+        <h3>โครงสร้างการตัดสินใจ</h3>
+        <p>แต่ละโหนดที่มี Child คือ “คำถาม” และ Child แต่ละตัวคือ “ตัวเลือก” ผู้ใช้จึงไม่ต้องเห็นอาชีพ 12 อย่างพร้อมกัน แต่ตัดสินใจทีละ 2–3 ตัวเลือก</p>
+      </div>
+      <div>
+        <h3>หมวดหมู่ 4 ระดับ</h3>
+        <p>Root = ทุกอาชีพ → หมวดใหญ่ 3 หมวด → สาขา 6 สาขา → อาชีพ 12 อย่าง (Leaf) ทุก Leaf อยู่ที่ Level 3 เท่ากัน</p>
+      </div>
+      <div>
+        <h3>เชื่อมกับ Graph</h3>
+        <p>Leaf ของ Tree คือ Vertex “อาชีพ” ตัวเดียวกันในกราฟทักษะ (หน้า 2–3) ผลลัพธ์จึงส่งต่อไปคำนวณเส้นทางเรียนรู้ได้ทันที</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary><h2 class="inline">ตารางโหนดทั้งหมด — Root, Parent, Child, Leaf</h2></summary>
+      <div class="table-wrap">
+        <table class="tbl" id="nodeTable">
+          <thead><tr><th>โหนด</th><th class="c">Level</th><th>Parent</th><th>Children</th><th class="c">Leaf ใต้โหนด</th><th>บทบาท</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+</main>
+<script src="js/data.js"></script>
+<script src="js/algorithms.js"></script>
+<script src="js/common.js"></script>
+<script src="js/tree.js"></script>
+</body>
+</html>

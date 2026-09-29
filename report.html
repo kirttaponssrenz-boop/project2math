@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>หลักการและโค้ด · ทางสายไอที</title>
+  <meta name="description" content="สรุป Vertex, Edge, Adjacency List, Path, Tree และโค้ด JavaScript ที่ใช้ — โครงงาน Graph Theory และ Tree">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B3%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="wrap narrow">
+
+  <section class="hero">
+    <div>
+      <p class="tag">หน้า 4 จาก 4 · สรุปหลักการ</p>
+      <h1>หลักการดิสครีตที่ใช้ในเว็บนี้<br>และโค้ดที่อยู่เบื้องหลัง</h1>
+      <p class="lead">สรุปว่าอะไรคือ Vertex, Edge, Weight, Path, Root, Parent, Child และ Leaf ของระบบ พร้อมโค้ด JavaScript จริงที่ใช้แทน Graph และ Tree ตัวเลขทั้งหมดในหน้านี้คำนวณจากข้อมูลของเว็บ</p>
+    </div>
+    <div class="stats" id="rStats"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>แต่ละหน้าใช้หลักการอะไร</h2></div>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th>หน้า</th><th>หลักการดิสครีต</th><th>สิ่งที่ผู้ใช้ทำได้</th></tr></thead>
+        <tbody>
+          <tr><td><a href="index.html">1 · ต้นไม้อาชีพ</a></td><td>Rooted Tree, Root/Parent/Child/Leaf, Path จาก Root, Tree Traversal</td><td>ตอบคำถามทีละข้อจนถึงอาชีพ ดูลำดับ Preorder / Postorder / BFS</td></tr>
+          <tr><td><a href="graph.html">2 · แผนที่ทักษะ</a></td><td>Directed Graph, Adjacency List, BFS, DFS, Path</td><td>เลือกจุดเริ่มต้น ดู BFS/DFS ทีละขั้น และ Path ไปยังอาชีพ</td></tr>
+          <tr><td><a href="roadmap.html">3 · เส้นทางเรียนรู้</a></td><td>Weighted Graph, Dijkstra, Shortest Path, Total Weight</td><td>เลือกอาชีพและทักษะที่มีแล้ว ได้แผนเรียนที่ใช้เวลาน้อยที่สุด</td></tr>
+          <tr><td>4 · หลักการและโค้ด</td><td>สรุปทั้งหมด</td><td>อ่านคำอธิบายและโค้ดที่ใช้</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>Graph ของระบบ</h2></div>
+    <dl class="defs">
+      <dt>Vertex</dt>
+      <dd>ทักษะ 1 อย่าง (เช่น HTML, Python), อาชีพ 1 อย่าง (เช่น Data Scientist) และจุดเริ่มต้น “Start” รวม <b class="v-count"></b> จุด</dd>
+      <dt>Edge</dt>
+      <dd>ลูกศร u → v แปลว่า “เรียน u แล้วไปเรียน หรือไปสู่ v ได้” มีทิศทาง รวม <b class="e-count"></b> เส้น</dd>
+      <dt>Weight</dt>
+      <dd>จำนวนสัปดาห์ (จำลอง) ที่ใช้ในการไปจาก u สู่ v เช่น Python → Statistics = 3</dd>
+      <dt>Path</dt>
+      <dd>ลำดับ Vertex ที่ไล่ตามลูกศรได้ เช่น ตัวอย่างด้านล่างคือแผนเรียนที่เร็วที่สุดจาก Start ไปเป็น Data Scientist</dd>
+    </dl>
+    <div id="rPath"></div>
+    <h3>Adjacency List (น้ำหนักอยู่ในวงเล็บเหลี่ยมคู่ที่สอง)</h3>
+    <pre class="code" id="rAdj"></pre>
+    <p class="muted">เลือกแทนกราฟด้วย Adjacency List แทน Adjacency Matrix เพราะกราฟนี้มี Edge น้อยเมื่อเทียบกับจำนวนคู่ Vertex ที่เป็นไปได้ (42 จากกว่า 1,000 คู่) จึงประหยัดที่และไล่หาเพื่อนบ้านได้เร็ว</p>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>Tree ของระบบ</h2></div>
+    <p>Tree นี้แทน<b>โครงสร้างการตัดสินใจและหมวดหมู่ของอาชีพ</b> — ทุก Leaf อยู่ที่ Level 3</p>
+    <div class="cols-2">
+      <pre class="code" id="rTree"></pre>
+      <dl class="defs" id="rRoles"></dl>
+    </div>
+    <div id="rTreePath"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>JavaScript ที่ใช้แทน Graph และ Tree</h2></div>
+    <p>โค้ดด้านล่างดึงจากซอร์สจริงของเว็บโดยตรง (ไม่ได้พิมพ์แยก) จึงตรงกับที่ทำงานอยู่ในหน้า 1–3 เสมอ</p>
+
+    <h3>Tree — โครงสร้างเวียนเกิด</h3>
+<pre class="code">const TREE = {
+  name: "IT Career",
+  children: [                                   // children = ลิสต์ของ subtree
+    { name: "Development", children: [
+        { name: "Web", children: [
+            { name: "Frontend Developer" },     // ไม่มี children = Leaf
+            { name: "Backend Developer" } ] },
+        /* ... */ ] },
+    /* ... */ ]
+};
+// เงื่อนไขตรวจ Leaf:      !node.children
+// Level ของโหนด:         pickerPath.length - 1   (Root = Level 0)
+// ลงลึกหนึ่งชั้น:         pickerPath = [...pickerPath, child]
+// ย้อนกลับหนึ่งชั้น:      pickerPath = pickerPath.slice(0, -1)</pre>
+
+    <h3>Tree Traversal (Bonus)</h3>
+    <pre class="code" data-fn="preorder"></pre>
+    <pre class="code" data-fn="postorder"></pre>
+    <pre class="code" data-fn="levelOrder"></pre>
+
+    <h3>Graph — BFS</h3>
+    <pre class="code" data-fn="bfs"></pre>
+    <h3>Graph — DFS</h3>
+    <pre class="code" data-fn="dfs"></pre>
+    <h3>Weighted Graph — Dijkstra</h3>
+    <pre class="code" data-fn="dijkstra"></pre>
+    <h3>สร้าง Path และหา Total Weight</h3>
+    <pre class="code" data-fn="buildPath"></pre>
+    <pre class="code" data-fn="pathWeight"></pre>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>Graph และ Tree ช่วยแก้ปัญหาอะไร</h2></div>
+    <div class="cols-2">
+      <div>
+        <h3>Tree — จัดโครงสร้างข้อมูล</h3>
+        <ul>
+          <li>ลดภาระการตัดสินใจ: จาก 12 อาชีพพร้อมกัน เหลือเลือกทีละ 2–3 ตัวเลือก</li>
+          <li>ทุกอาชีพอยู่ใต้หมวดที่ชัดเจน เพิ่มอาชีพใหม่ได้โดยเพิ่ม Leaf ใต้สาขาเดิม</li>
+          <li>Traversal ช่วยพิมพ์สารบัญ (Preorder) และนับอาชีพต่อหมวด (Postorder)</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Graph — ตอบคำถามเรื่องความสัมพันธ์</h3>
+        <ul>
+          <li>ทักษะหนึ่งใช้ได้กับหลายอาชีพ (เช่น SQL) ซึ่งต้นไม้แสดงไม่ได้ กราฟแสดงได้</li>
+          <li>BFS/DFS ตอบว่า “มีทางไปถึงหรือไม่” และ “ไปได้อาชีพไหนบ้าง”</li>
+          <li>Dijkstra ตอบว่า “ทางไหนใช้เวลาน้อยที่สุด” และเปลี่ยนคำตอบตามทักษะที่ผู้ใช้มีอยู่แล้ว</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TODO: แก้ Prompt ในส่วนนี้ให้ตรงกับ Prompt ที่นักศึกษาใช้กับ AI จริง -->
+  <section class="card">
+    <div class="card-h"><h2>Prompt ที่ใช้กับ AI และการนำผลลัพธ์ไปใช้</h2></div>
+    <div class="prompt">
+      <h3>Prompt 1 — คิดธีมเว็บ</h3>
+      <blockquote>ช่วยเสนอไอเดียเว็บไซต์ 4 หน้าที่ใช้ Graph Theory (BFS/DFS, Weighted Graph) และ Tree สำหรับรายวิชา Discrete Mathematics for IT ให้ผู้ใช้โต้ตอบได้ ใช้ HTML, CSS, JavaScript เท่านั้น และเผยแพร่บน GitHub Pages ได้</blockquote>
+      <p><b>นำไปใช้:</b> เลือกธีม “แนะนำเส้นทางอาชีพไอที” เพราะทักษะกับอาชีพมีความสัมพันธ์หลายต่อหลายจริง (เหมาะกับ Graph) และอาชีพจัดเป็นหมวดได้ชัด (เหมาะกับ Tree) แล้วแบ่งหน้าตามหลักการ: Tree → BFS/DFS → Dijkstra → สรุป</p>
+    </div>
+    <div class="prompt">
+      <h3>Prompt 2 — ออกแบบข้อมูล</h3>
+      <blockquote>ออกแบบกราฟทักษะและอาชีพไอทีอย่างน้อย 6 Vertex และ 7 Edge ในรูป Adjacency List ด้วย JavaScript โดยให้น้ำหนักเป็นจำนวนสัปดาห์ และออกแบบ Tree อย่างน้อย 3 ระดับที่ Leaf ตรงกับ Vertex อาชีพในกราฟ</blockquote>
+      <p><b>นำไปใช้:</b> ได้โครงของ <code>graph</code> และ <code>TREE</code> ใน data.js จากนั้นปรับน้ำหนักเองให้มีกรณีที่ BFS กับ Dijkstra ได้ Path ต่างกัน (เช่น Data Scientist, DevOps Engineer) เพื่อใช้อธิบายว่าน้ำหนักเปลี่ยนคำตอบ</p>
+    </div>
+    <div class="prompt">
+      <h3>Prompt 3 — เขียนอัลกอริทึม</h3>
+      <blockquote>เขียน BFS, DFS และ Dijkstra ด้วย JavaScript โดยไม่ใช้ไลบรารี ใช้ Adjacency List และให้เก็บสถานะทุกขั้นตอนไว้ในอาร์เรย์ เพื่อนำไปแสดงผลทีละขั้นบนหน้าเว็บ</blockquote>
+      <p><b>นำไปใช้:</b> ได้โครงของ algorithms.js แล้วอ่านทีละบรรทัดให้ตรงกับขั้นตอนในสไลด์ (ตั้งค่าเริ่มต้น → เลือกค่าต่ำสุด → ตรวจเพื่อนบ้าน → relax → ทำซ้ำ) และทดสอบกับตัวอย่างที่คำนวณด้วยมือ</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>เทียบกับเกณฑ์ของโครงงาน</h2></div>
+    <div class="table-wrap">
+      <table class="tbl">
+        <thead><tr><th>ข้อกำหนด</th><th>ที่ทำในเว็บนี้</th></tr></thead>
+        <tbody>
+          <tr><td>Vertex ≥ 6, Edge ≥ 7</td><td>Vertex <b class="v-count"></b> จุด, Edge <b class="e-count"></b> เส้น</td></tr>
+          <tr><td>Adjacency List ด้วย JavaScript</td><td>ตัวแปร <code>graph</code> ใน js/data.js (แสดงเต็มในหน้า 2 และหน้านี้)</td></tr>
+          <tr><td>แสดง Path อย่างน้อย 1 เส้นทาง</td><td>หน้า 2 (BFS/DFS) และหน้า 3 (Dijkstra) พร้อมอธิบายความหมาย</td></tr>
+          <tr><td>Tree ≥ 3 ระดับ</td><td>4 ระดับ (Level 0–3)</td></tr>
+          <tr><td>ระบุ Root, Parent, Child, Leaf</td><td>ป้ายบทบาทในหน้า 1 และตารางโหนดทั้งหมด</td></tr>
+          <tr><td>Path จาก Root ไป Leaf</td><td>แสดงเมื่อเลือกอาชีพเสร็จในหน้า 1</td></tr>
+          <tr><td>Tree Traversal (Bonus)</td><td>Preorder, Postorder, BFS ในหน้า 1</td></tr>
+          <tr><td>ประยุกต์หลักการดิสครีต ≥ 2 หัวข้อ</td><td>Tree, Graph (BFS/DFS), Weighted Graph (Dijkstra)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>เผยแพร่บน GitHub Pages</h2></div>
+    <ol class="steps-list">
+      <li>สร้าง Repository ใหม่บน GitHub แล้วอัปโหลดทุกไฟล์ในโฟลเดอร์นี้ (index.html อยู่ที่ราก)</li>
+      <li>ไปที่ Settings → Pages เลือก Branch: main และโฟลเดอร์ / (root) แล้วกด Save</li>
+      <li>รอประมาณ 1–2 นาที จะได้ URL รูปแบบ <code>https://ชื่อผู้ใช้.github.io/ชื่อ-repo/</code></li>
+    </ol>
+  </section>
+
+</main>
+<script src="js/data.js"></script>
+<script src="js/algorithms.js"></script>
+<script src="js/common.js"></script>
+<script src="js/report.js"></script>
+</body>
+</html>

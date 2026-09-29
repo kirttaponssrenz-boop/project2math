@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>แผนที่ทักษะ · ทางสายไอที</title>
+  <meta name="description" content="กราฟทักษะและอาชีพไอที พร้อมสาธิต BFS และ DFS ทีละขั้น — โครงงาน Graph Theory และ Tree">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B3%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="wrap">
+
+  <section class="hero">
+    <div>
+      <p class="tag">หน้า 2 จาก 4 · หลักการ: Graph, BFS, DFS</p>
+      <h1>แผนที่ทักษะ<br>จากทักษะหนึ่ง ไปอาชีพไหนได้บ้าง</h1>
+      <p class="lead">ทักษะและอาชีพคือ Vertex ลูกศรคือ Edge “เรียนอันนี้แล้วไปต่ออันนั้นได้” เลือกจุดเริ่มต้น แล้วดู BFS หรือ DFS เดินสำรวจกราฟทีละขั้น</p>
+    </div>
+    <div class="stats" id="graphStats"></div>
+  </section>
+
+  <section class="card toolbar" aria-label="ตัวควบคุม">
+    <label>เริ่มที่ (Start vertex)
+      <select id="startSel"></select>
+    </label>
+    <label>ปลายทางที่อยากไปถึง
+      <select id="targetSel"></select>
+    </label>
+    <div class="field">
+      <span class="lbl">อัลกอริทึม</span>
+      <div class="seg" id="algoSeg">
+        <button data-a="BFS">BFS · Queue</button>
+        <button data-a="DFS">DFS · Stack</button>
+      </div>
+    </div>
+    <div class="field">
+      <span class="lbl">ควบคุม</span>
+      <div class="row">
+        <button class="btn icon" id="btnReset" title="กลับไปเริ่มต้น" aria-label="กลับไปเริ่มต้น">⏮</button>
+        <button class="btn icon" id="btnPrev" title="ถอยหนึ่งขั้น" aria-label="ถอยหนึ่งขั้น">◀</button>
+        <button class="btn primary" id="btnPlay">▶ เล่น</button>
+        <button class="btn icon" id="btnNext" title="เดินหนึ่งขั้น" aria-label="เดินหนึ่งขั้น">▶|</button>
+      </div>
+    </div>
+    <label>ความเร็ว
+      <input type="range" id="speed" min="1" max="5" value="3">
+    </label>
+  </section>
+
+  <section>
+    <div class="gv-wrap" id="gwrap"><svg id="gsvg" class="gv" role="img" aria-label="กราฟทักษะและอาชีพ 32 จุด"></svg></div>
+    <div class="legend under">
+      <span><i class="sw start"></i>Start</span>
+      <span><i class="sw skill"></i>ทักษะ (Vertex)</span>
+      <span><i class="sw career"></i>อาชีพ (Vertex ปลายทาง)</span>
+      <span><i class="sw cur"></i>กำลังเยี่ยม</span>
+      <span><i class="sw front"></i>อยู่ในคิว/สแตก</span>
+      <span><i class="ln tree"></i>Edge ที่ใช้ค้นพบจุดใหม่</span>
+      <span><i class="ln path"></i>Path ไปปลายทาง</span>
+      <span class="muted">คลิกจุดใดก็ได้เพื่อตั้งเป็นจุดเริ่มต้น · ชี้เมาส์เพื่อดูเพื่อนบ้าน</span>
+    </div>
+  </section>
+
+  <section class="grid-2">
+    <div class="stack">
+      <div class="card">
+        <div class="card-h"><h2 id="dsTitle">Queue</h2></div>
+        <div id="dsItems" class="chips"></div>
+        <p id="note" class="note-box"></p>
+        <div class="card-h sub"><h3>ลำดับที่เยี่ยมแล้ว</h3></div>
+        <div id="orderList" class="ordlist"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h2>Path ไปยังปลายทาง</h2></div>
+        <div id="pathBox"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h2>ไปถึงอะไรได้บ้าง</h2></div>
+        <div id="reach"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h">
+        <h2>Adjacency List (JavaScript)</h2>
+        <span class="muted small">|V| = <b id="vCount"></b> · |E| = <b id="eCount"></b></span>
+      </div>
+      <p class="muted small">แถวที่กำลังเยี่ยมจะถูกไฮไลต์ — แต่ละแถวคือเพื่อนบ้านขาออกของ Vertex นั้น</p>
+      <pre class="code adj" id="adj" aria-label="Adjacency List"></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>BFS กับ DFS ต่างกันอย่างไร</h2></div>
+    <div class="cols-2">
+      <div>
+        <h3>BFS — ทีละระดับ</h3>
+        <p>ใช้ Queue (เข้าก่อนออกก่อน) เยี่ยมจุดที่ใกล้ Start ก่อน จึงการันตีว่า Path ที่ได้ผ่านจำนวน Edge น้อยที่สุด ตัวอย่าง: Start → SQL → Backend Developer</p>
+      </div>
+      <div>
+        <h3>DFS — ลึกสุดก่อน</h3>
+        <p>ใช้ Stack (เข้าหลังออกก่อน) ไล่ลงไปจนสุดสายแล้วค่อยย้อนกลับ ได้ Path ที่ถูกต้องแต่ไม่การันตีว่าสั้นที่สุด เช่น Backend Developer อาจถูกพบผ่าน HTML → CSS → JavaScript → Node.js</p>
+      </div>
+    </div>
+    <p class="muted">BFS และ DFS ไม่สนน้ำหนักของ Edge — ถ้าอยากได้เส้นทางที่ใช้เวลาเรียนน้อยที่สุด ให้ไปหน้า 3 ซึ่งใช้ Weighted Graph และ Dijkstra</p>
+  </section>
+
+</main>
+<script src="js/data.js"></script>
+<script src="js/algorithms.js"></script>
+<script src="js/common.js"></script>
+<script src="js/graphview.js"></script>
+<script src="js/graph.js"></script>
+</body>
+</html>

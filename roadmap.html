@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>เส้นทางเรียนรู้ · ทางสายไอที</title>
+  <meta name="description" content="หาเส้นทางเรียนรู้ที่ใช้เวลาน้อยที่สุดด้วย Weighted Graph และ Dijkstra — โครงงาน Graph Theory และ Tree">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B3%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="wrap">
+
+  <section class="hero">
+    <div>
+      <p class="tag">หน้า 3 จาก 4 · หลักการ: Weighted Graph, Dijkstra</p>
+      <h1>เรียนอะไรก่อน ถึงจะไปถึงอาชีพนั้น<br>โดยใช้เวลาน้อยที่สุด</h1>
+      <p class="lead">ตัวเลขบนลูกศรคือน้ำหนัก (Weight) = จำนวนสัปดาห์ที่ใช้เรียน Dijkstra จะเลือก Path ที่ผลรวมน้ำหนักต่ำสุด ซึ่งไม่จำเป็นต้องเป็น Path ที่ผ่านทักษะน้อยที่สุด</p>
+    </div>
+    <div class="stats" id="rmStats"></div>
+  </section>
+
+  <section class="card toolbar" aria-label="ตัวควบคุม">
+    <label>อาชีพปลายทาง
+      <select id="targetSel"></select>
+    </label>
+    <div class="field wide">
+      <span class="lbl">ทักษะที่ฉันมีอยู่แล้ว <span class="muted small">(คลิกเพื่อเลือก · ใช้เป็นจุดเริ่มต้นที่มีค่า 0)</span></span>
+      <div class="chips toggles" id="knownChips"></div>
+    </div>
+    <div class="field">
+      <span class="lbl">ดูทีละขั้น</span>
+      <div class="row">
+        <button class="btn icon" id="btnReset" title="กลับไปเริ่มต้น" aria-label="กลับไปเริ่มต้น">⏮</button>
+        <button class="btn icon" id="btnPrev" title="ถอยหนึ่งขั้น" aria-label="ถอยหนึ่งขั้น">◀</button>
+        <button class="btn primary" id="btnPlay">▶ เล่น</button>
+        <button class="btn icon" id="btnNext" title="เดินหนึ่งขั้น" aria-label="เดินหนึ่งขั้น">▶|</button>
+      </div>
+    </div>
+    <label class="check"><input type="checkbox" id="showW" checked> แสดงน้ำหนักทุกเส้น</label>
+  </section>
+
+  <section>
+    <div class="gv-wrap show-w" id="gwrap"><svg id="rsvg" class="gv" role="img" aria-label="กราฟถ่วงน้ำหนัก"></svg></div>
+    <div class="legend under">
+      <span><i class="sw start"></i>Start</span>
+      <span><i class="sw skill"></i>ทักษะ</span>
+      <span><i class="sw career"></i>อาชีพ</span>
+      <span><i class="sw known"></i>ทักษะที่มีแล้ว</span>
+      <span><i class="sw cur"></i>จุดที่เลือกปิดตอนนี้</span>
+      <span><i class="sw front"></i>มีค่า dist แล้วแต่ยังไม่ปิด</span>
+      <span><i class="ln path"></i>Shortest Path</span>
+      <span class="muted">คลิกอาชีพเพื่อเลือกปลายทาง · คลิกทักษะเพื่อบอกว่ามีแล้ว</span>
+    </div>
+  </section>
+
+  <section class="grid-2">
+    <div class="stack">
+      <div class="card" id="resultCard">
+        <div class="card-h"><h2>ผลลัพธ์: Shortest Path</h2></div>
+        <div id="dijkstraBox"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h2>เทียบกับ BFS (Path ที่ผ่าน Edge น้อยสุด)</h2></div>
+        <div id="compareBox"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h2>แผนการเรียนตามสัปดาห์</h2></div>
+        <ol class="timeline" id="timeline"></ol>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <div class="card-h"><h2 id="stepTitle">ขั้นตอนของ Dijkstra</h2></div>
+        <p id="stepNote" class="note-box"></p>
+        <div id="relaxList"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>ตาราง dist / prev</h2><span class="muted small" id="tblInfo"></span></div>
+        <div class="table-wrap tall">
+          <table class="tbl compact" id="distTable">
+            <thead><tr><th>Vertex</th><th class="c">dist (สัปดาห์)</th><th>prev</th><th>สถานะ</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>Dijkstra ทำงานอย่างไรในระบบนี้</h2></div>
+    <ol class="steps-list">
+      <li>ตั้ง dist ของจุดเริ่มต้น (Start และทักษะที่มีแล้ว) = 0 ส่วนจุดอื่น = ∞</li>
+      <li>เลือกจุดที่ยังไม่ถูกปิดและมี dist ต่ำสุด แล้วปิดจุดนั้น</li>
+      <li>ตรวจเพื่อนบ้านของจุดนั้น ถ้า dist[u] + w น้อยกว่า dist ของเพื่อนบ้าน ให้ปรับค่าและจำ prev (relax)</li>
+      <li>ทำซ้ำจนปิดจุดปลายทาง แล้วไล่ prev ย้อนกลับเพื่อได้ Path</li>
+    </ol>
+  </section>
+
+</main>
+<script src="js/data.js"></script>
+<script src="js/algorithms.js"></script>
+<script src="js/common.js"></script>
+<script src="js/graphview.js"></script>
+<script src="js/roadmap.js"></script>
+</body>
+</html>
